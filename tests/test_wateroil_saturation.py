@@ -8,7 +8,7 @@ from __future__ import print_function
 import os
 import sys
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 import hypothesis.strategies as st
 
 import pandas as pd
@@ -43,7 +43,9 @@ def test_wateroil_random(swirr, swl, swcr, sorw, h, tag):
         assert not wo.table.empty
         assert not wo.table.isnull().values.any()
     except AssertionError:
-        pass
+        print("a", end="")
+        return
+    print("V", end="")
 
 
 @given(st.floats(min_value=0, max_value=1))
@@ -78,22 +80,26 @@ def test_wateroil_dual(p1, p2):
         check_table(wo.table)
         # Will fail when swl > 1 - sorw
     except AssertionError:
-        pass
+        print("a", end="")
+        return
 
     try:
         wo = WaterOil(swl=p1, swirr=p2)
         check_table(wo.table)
     except AssertionError:
-        pass
+        print("a", end="")
+        return
 
     try:
         wo = WaterOil(swcr=p1, sorw=p2)
         check_table(wo.table)
     except AssertionError:
-        pass
-
+        print("a", end="")
+        return
     try:
         wo = WaterOil(swirr=p1, sorw=p2)
         check_table(wo.table)
     except AssertionError:
-        pass
+        print("a", end="")
+        return
+    print("V", end="")
