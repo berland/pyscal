@@ -5,6 +5,8 @@ import copy
 import numpy as np
 import pandas as pd
 
+from pyscal.constants import SWINTEGERS
+from pyscal import WaterOilGas, WaterOil, GasOil
 
 class SCALrecommendation(object):
     """A SCAL recommendation consists of three OilWaterGas objects,
