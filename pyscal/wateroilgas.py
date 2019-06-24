@@ -25,6 +25,16 @@ class WaterOilGas(object):
         self, swirr=0, swl=0.0, swcr=0.0, sorw=0.0, sorg=0, sgcr=0, h=0.01, tag=""
     ):
         """Sets up saturation range for water (Sw) and gas (Sg)"""
+        assert sgcr + swcr < 1 - h
+        assert sgcr + swl < 1 - h
+        assert sorg + swcr < 1 - h
+        assert sorg + swl < 1 - h
+        assert sgcr + swirr < 1 - h
+        assert sorg + swirr < 1 - h
+        assert sorw + swirr < 1 - h
+        assert sorw + swcr < 1 - h
+        assert sorw + swl < 1 - h
+
         self.wateroil = pyscal.WaterOil(
             swirr=swirr, swl=swl, swcr=swcr, sorw=sorw, h=h, tag=tag
         )
