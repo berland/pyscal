@@ -207,6 +207,8 @@ class GasOil(object):
             # anchor to sorg.
             if krgmax is not None:
                 print("krgmax ignored when we anchor to sorg")
+            else:
+                krgmax=np.nan
         self.krgcomment = "-- Corey krg, ng=%g, krgend=%g, krgmax=%g\n" % (
             ng,
             krgend,
@@ -273,6 +275,8 @@ class GasOil(object):
             # anchor to sorg.
             if krgmax is not None:
                 print("krgmax ignored when anchoring to sorg")
+            else:
+                krgmax = np.nan
         self.krgcomment = "-- LET krg, l=%g, e=%g, t=%g, krgend=%g, krgmax=%g\n" % (
             l,
             e,
