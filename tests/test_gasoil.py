@@ -31,6 +31,48 @@ def check_table(df):
         assert df["pc"].is_monotonic
 
 
+@given(
+    st.floats(),
+    st.floats(),
+    st.floats(min_value=0, max_value=1.1),
+    st.floats(),
+    st.floats(),
+    st.text(),
+)
+def test_gasoil_random(swirr, sgcr, h, swl, sorg, tag):
+    """Shoot wildly with arguments, the code should throw ValueError
+    or AssertionError when input is invalid, but we don't want other crashes"""
+    try:
+        go = GasOil(swirr=swirr, sgcr=sgcr, h=h, swl=swl, sorg=sorg, tag=tag)
+        assert not go.table.empty
+        assert not go.table.isnull().values.any()
+    except AssertionError:
+        print("a", end="")
+        return
+    print("V", end="")
+
+
+@given(
+    st.floats(min_value=0, max_value=0.6),
+    st.floats(min_value=0, max_value=0.6),
+    st.floats(min_value=0.01, max_value=0.2),
+    st.floats(min_value=0, max_value=0.6),
+    st.floats(min_value=0, max_value=0.6),
+)
+def test_gasoil_sensible(swirr, sgcr, h, swl, sorg):
+    """Shoot wildly with arguments, the code should throw ValueError
+    or AssertionError when input is invalid, but we don't want other crashes"""
+    try:
+        go = GasOil(swirr=swirr, sgcr=sgcr, h=h, swl=swl, sorg=sorg)
+        # print(go.table)
+        assert not go.table.empty
+        assert not go.table.isnull().values.any()
+    except AssertionError:
+        print("a", end="")
+        return
+    print("V", end="")
+
+
 @given(st.floats(), st.floats())
 def test_gasoil_corey1(ng, nog):
     go = GasOil()
