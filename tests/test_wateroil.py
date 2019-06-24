@@ -47,6 +47,7 @@ def test_wateroil_corey1(nw, now):
     swofstr = wo.SWOF()
     assert len(swofstr) > 100
 
+
 @given(st.floats(), st.floats(), st.floats(), st.floats(), st.floats())
 def test_wateroil_let1(l, e, t, krwend, krwmax):
     wo = WaterOil()

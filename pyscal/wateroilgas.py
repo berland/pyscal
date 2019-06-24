@@ -5,6 +5,9 @@ import copy
 import numpy as np
 import pandas as pd
 
+import pyscal
+from pyscal.constants import SWINTEGERS as SWINTEGERS
+
 
 class WaterOilGas(object):
 
@@ -19,13 +22,15 @@ class WaterOilGas(object):
     """
 
     def __init__(
-        self, swirr=0, swl=0.1, swcr=0.0, sorw=0.05, sorg=0, sgcr=0, h=0.01, tag=""
+        self, swirr=0, swl=0.0, swcr=0.0, sorw=0.0, sorg=0, sgcr=0, h=0.01, tag=""
     ):
         """Sets up saturation range for water (Sw) and gas (Sg)"""
-        self.wateroil = WaterOil(
+        self.wateroil = pyscal.WaterOil(
             swirr=swirr, swl=swl, swcr=swcr, sorw=sorw, h=h, tag=tag
         )
-        self.gasoil = GasOil(swirr=swirr, sgcr=sgcr, sorg=sorg, swl=swl, h=h, tag=tag)
+        self.gasoil = pyscal.GasOil(
+            swirr=swirr, sgcr=sgcr, sorg=sorg, swl=swl, h=h, tag=tag
+        )
 
     def selfcheck(self):
         """Run selfcheck on both wateroil and gasoil.
@@ -149,7 +154,17 @@ class WaterOilGas(object):
         else:
             return None
 
-    def run_eclipse_test(self):
+    def run_flow_test(self):
+        import subprocess
+
+        try:
+            self.run_eclipse_test(eclipselauncher="/usr/bin/flow", launcheroptions="")
+        except subprocess.CalledProcessError:
+            pass
+
+    def run_eclipse_test(
+        self, eclipselauncher="/project/res/bin/runeclipse", launcheroptions="-i"
+    ):
         """Start the Eclipse simulator on a minimal deck in order to
         test the properties of the current WaterOilGas deck"""
         import tempfile
@@ -165,8 +180,6 @@ WATER
 GAS
 START
   1 'JAN' 2100 /
-TABDIM
-   2* 10000 /
 GRID
 DX
    10 /
@@ -211,8 +224,6 @@ EQUIL
         eclfile = os.path.join(tmpdir, "RELPERMTEST.DATA")
         with open(eclfile, "w") as eclfileh:
             eclfileh.write(ecldeck)
-        ecloutput = subprocess.check_output(
-            ["/project/res/bin/runeclipse", "-i", eclfile]
-        )
+        ecloutput = subprocess.check_output([eclipselauncher, launcheroptions, eclfile])
         ecloutputlines = ecloutput.split("\n")
         print([x for x in ecloutputlines if "Error" in x or "ERROR" in x])
