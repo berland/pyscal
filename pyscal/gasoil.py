@@ -46,6 +46,8 @@ class GasOil(object):
         assert sorg < 1
         assert isinstance(tag, str)
         assert isinstance(krgendanchor, str)
+        assert swirr + sorg < 1 - h
+        assert swl + sorg < 1 - h
 
         self.h = h
         swl = max(swl, swirr)  # Can't allow swl < swirr, should we warn user?
@@ -54,10 +56,6 @@ class GasOil(object):
         self.sorg = sorg
         self.sgcr = sgcr
         self.tag = tag
-        if not 1 - sorg - swl > 0:
-            raise Exception(
-                "No saturation range left " + "after endpoints, check input"
-            )
         if np.isclose(sorg, 0.0):
             krgendanchor = ""  # not meaningful to anchor to sorg if sorg is zero
         self.krgendanchor = krgendanchor
