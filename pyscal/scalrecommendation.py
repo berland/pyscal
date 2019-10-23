@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import copy
-import logging
-import numpy as np
-import pandas as pd
 
-from pyscal.constants import SWINTEGERS
+import logging
+
+import numpy as np
 
 from pyscal import WaterOilGas, WaterOil, GasOil, interpolator
+
 
 class SCALrecommendation(object):
     """A SCAL recommendation consists of three OilWaterGas objects,
