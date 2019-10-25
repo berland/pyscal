@@ -6,9 +6,9 @@ from __future__ import division
 from __future__ import print_function
 
 import pandas as pd
+import numpy as np
 
-
-from pyscal import utils
+from pyscal import utils, WaterOil
 
 
 def test_diffjumppoint():
@@ -55,3 +55,88 @@ def test_diffjumppoint():
     )
     assert utils.estimate_diffjumppoint(df, side="left") == 0.2
     assert utils.estimate_diffjumppoint(df, side="right") == 0.9
+
+
+def test_normalize_nonlinpart():
+    # Test that we can make normalized functions
+    wo = WaterOil(swl=0.1, swcr=0.12, sorw=0.05, h=0.05)
+    wo.add_corey_water(nw=2.1, krwend=0.9)
+    wo.add_corey_oil(now=3, kroend=0.8)
+    krwn, kron = utils.normalize_nonlinpart(wo)
+
+    assert np.isclose(krwn(0), 0)
+    assert np.isclose(krwn(1), 0.9)
+
+    # kron is normalized on son
+    assert np.isclose(kron(0), 0)
+    assert np.isclose(kron(1), 0.8)
+
+    # Test with tricky endpoints
+    h = 0.01
+    wo = WaterOil(swl=h, swcr=h, sorw=h, h=h)
+    wo.add_corey_water(nw=2.1, krwend=0.9)
+    wo.add_corey_oil(now=3, kroend=0.8)
+    krwn, kron = utils.normalize_nonlinpart(wo)
+    assert np.isclose(krwn(0), 0.0)
+    assert np.isclose(krwn(1), 0.9)
+    assert np.isclose(kron(0), 0)
+    assert np.isclose(kron(1), 0.8)
+
+    # Test again with zero endpoints:
+    wo = WaterOil(swl=0, swcr=0, sorw=0, h=0.01)
+    wo.add_corey_water(nw=2.1, krwend=0.9)
+    wo.add_corey_oil(now=3, kroend=0.8)
+    krwn, kron = utils.normalize_nonlinpart(wo)
+    assert np.isclose(krwn(0), 0.0)
+    assert np.isclose(krwn(1), 0.9)
+    assert np.isclose(kron(0), 0)
+    assert np.isclose(kron(1), 0.8)
+
+    # Test when endpoints are messed up:
+    wo = WaterOil(swl=0.1, swcr=0.2, sorw=0.1, h=0.1)
+    wo.add_corey_water(nw=2.1, krwend=0.6)
+    wo.add_corey_oil(now=3, kroend=0.8)
+    wo.swl = 0
+    wo.swcr = 0
+    wo.sorw = 0
+    krwn, kron = utils.normalize_nonlinpart(wo)
+    # These go well still, since we are at zero
+    assert np.isclose(krwn(0), 0.0)
+    assert np.isclose(kron(0), 0)
+    # These do not match when endpoints are wrong
+    assert not np.isclose(krwn(1), 0.6)
+    assert not np.isclose(kron(1), 0.8)
+
+    # So fix endpoints!
+    wo.swl = wo.table["sw"].min()
+    wo.swcr = wo.estimate_swcr()
+    wo.sorw = wo.estimate_sorw()
+    # Try again
+    krwn, kron = utils.normalize_nonlinpart(wo)
+    assert np.isclose(krwn(0), 0.0)
+    assert np.isclose(kron(0), 0)
+    assert np.isclose(krwn(1), 0.6)
+    assert np.isclose(kron(1), 0.8)
+
+def test_interpolate_wo():
+    ow_low = WaterOil(swl=0.03, swcr=0.09, sorw=0.1)
+    ow_high = WaterOil(swl=0.1, swcr=0.13, sorw=0.05)
+    ow_low.add_corey_water(nw=1, krwend=0.8)
+    ow_high.add_corey_water(nw=2, krwend=0.7)
+    ow_low.add_corey_oil(now=3, kroend=0.6)
+    ow_high.add_corey_oil(now=2, kroend=0.95)
+    #ow_low = WaterOil(swl=0.1, swcr=0.2, sorw=0.1)
+    #ow_high = WaterOil(swl=0.2, swcr=0.3, sorw=0.2)
+    #ow_low.add_corey_water(2)
+    #ow_low.add_corey_oil(2)
+    #ow_high.add_corey_water(3)
+    #ow_high.add_corey_oil(3)
+
+    from matplotlib import pyplot as plt
+    fig, ax = plt.subplots()
+    ow_low.plotkrwkrow(ax, color='red')
+    ow_high.plotkrwkrow(ax, color='blue')
+
+    ow_ip = utils.interpolate_ow(ow_low, ow_high, 0.5)
+    ow_ip.plotkrwkrow(ax, color='green')
+    plt.show()
