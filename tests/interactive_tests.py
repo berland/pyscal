@@ -10,9 +10,34 @@ a Python session and run the functions manually.
 
 from __future__ import print_function
 
+import random
+
 import numpy as np
 
-from pyscal import WaterOil, WaterOilGas, GasOil, SCALrecommendation
+from pyscal import WaterOil, WaterOilGas, GasOil, SCALrecommendation, utils
+
+
+def test_interpolate_wo():
+    swl = random.uniform(0, 0.1)
+    swcr = swl + random.uniform(0, 0.1)
+    sorw = random.uniform(0, 0.2)
+    ow_low = WaterOil(swl=swl, swcr=swcr, sorw=sorw)
+    ow_high = WaterOil(swl=swl + 0.1, swcr=swcr + 0.1, sorw=sorw + 0.1)
+    ow_low.add_corey_water(nw=random.uniform(1, 3), krwend=random.uniform(0.5, 1))
+    ow_high.add_corey_water(nw=random.uniform(1, 3), krwend=random.uniform(0.5, 1))
+    ow_low.add_corey_oil(now=random.uniform(1, 3), kroend=random.uniform(0.5, 1))
+    ow_high.add_corey_oil(now=random.uniform(1, 3), kroend=random.uniform(0.5, 1))
+
+    from matplotlib import pyplot as plt
+
+    fig, ax = plt.subplots()
+    ow_low.plotkrwkrow(ax, color="red")
+    ow_high.plotkrwkrow(ax, color="blue")
+
+    for t in np.arange(0, 1, 0.1):
+        ow_ip = utils.interpolate_ow(ow_low, ow_high, t)
+        ow_ip.plotkrwkrow(ax, color="green")
+    plt.show()
 
 
 def interpolateplottest():
@@ -343,11 +368,13 @@ def main():
     print(sgof.SGOF())
 
     print("")
-    print("-- ***************************************")
-    print("-- Test of one Corey curve set")
-    print("-- Check that all the defined endpoints are correct")
+    print("-- ******************************************")
+    print("-- Manual visual check of interpolation in LET-space")
+    print("--  Check:")
+    print("--   * green curves are between red and blue blue line")
     print("-- (close plot window to continue)")
-    testplot()
+    for _ in range(0, 10):
+        test_interpolate_wo()
 
     print("")
     print("-- ******************************************")

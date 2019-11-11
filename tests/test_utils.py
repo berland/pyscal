@@ -128,13 +128,6 @@ def test_interpolate_wo():
     ow_low.add_corey_oil(now=3, kroend=0.6)
     ow_high.add_corey_oil(now=2, kroend=0.95)
 
-    # from matplotlib import pyplot as plt
-    # fig, ax = plt.subplots()
-    # ow_low.plotkrwkrow(ax, color='red')
-    # ow_high.plotkrwkrow(ax, color='blue')
-
     for t in np.arange(0, 1, 0.1):
         ow_ip = utils.interpolate_ow(ow_low, ow_high, t)
         check_table(ow_ip.table)
-        # ow_ip.plotkrwkrow(ax, color='green')
-    # plt.show()
