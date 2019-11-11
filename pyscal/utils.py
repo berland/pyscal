@@ -295,16 +295,25 @@ def interpolate_ow(ow_low, ow_high, parameter, h=0.01):
     swcr_new = weighted_value(ow_low.swcr, ow_high.swcr)
     sorw_new = weighted_value(ow_low.sorw, ow_high.sorw)
 
+    # Interpolate kr at saturation endpoints
+    krwmax_new = weighted_value(ow_low.table["krw"].max(), ow_high.table["krw"].max())
+    kromax_new = weighted_value(ow_low.table["krow"].max(), ow_high.table["krow"].max())
+    krwend_new = weighted_value(krw1(1), krw2(1))
+    kroend_new = weighted_value(kro1(0), kro2(0))
+
     # Construct the new WaterOil object, with interpolated
     # endpoints:
     ow_new = WaterOil(swl=swl_new, swcr=swcr_new, sorw=sorw_new, h=h)
 
-    # Add interpolated relperm data:
+    # Add interpolated relperm data in nonlinear parts:
     ow_new.table["krw"] = weighted_value(
         krw1(ow_new.table["swn"]), krw2(ow_new.table["swn"])
     )
     ow_new.table["krow"] = weighted_value(
         kro1(ow_new.table["son"]), kro2(ow_new.table["son"])
     )
+
+    ow_new.set_endpoints_linearpart_krw(krwend=krwend_new, krwmax=krwmax_new)
+    ow_new.set_endpoints_linearpart_krow(kroend=kroend_new, kromax=kromax_new)
 
     return ow_new

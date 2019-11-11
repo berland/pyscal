@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 
 from pyscal import utils, WaterOil
+from test_wateroil import check_table
 
 
 def test_diffjumppoint():
@@ -118,6 +119,7 @@ def test_normalize_nonlinpart():
     assert np.isclose(krwn(1), 0.6)
     assert np.isclose(kron(1), 0.8)
 
+
 def test_interpolate_wo():
     ow_low = WaterOil(swl=0.03, swcr=0.09, sorw=0.1)
     ow_high = WaterOil(swl=0.1, swcr=0.13, sorw=0.05)
@@ -125,18 +127,14 @@ def test_interpolate_wo():
     ow_high.add_corey_water(nw=2, krwend=0.7)
     ow_low.add_corey_oil(now=3, kroend=0.6)
     ow_high.add_corey_oil(now=2, kroend=0.95)
-    #ow_low = WaterOil(swl=0.1, swcr=0.2, sorw=0.1)
-    #ow_high = WaterOil(swl=0.2, swcr=0.3, sorw=0.2)
-    #ow_low.add_corey_water(2)
-    #ow_low.add_corey_oil(2)
-    #ow_high.add_corey_water(3)
-    #ow_high.add_corey_oil(3)
 
-    from matplotlib import pyplot as plt
-    fig, ax = plt.subplots()
-    ow_low.plotkrwkrow(ax, color='red')
-    ow_high.plotkrwkrow(ax, color='blue')
+    # from matplotlib import pyplot as plt
+    # fig, ax = plt.subplots()
+    # ow_low.plotkrwkrow(ax, color='red')
+    # ow_high.plotkrwkrow(ax, color='blue')
 
-    ow_ip = utils.interpolate_ow(ow_low, ow_high, 0.5)
-    ow_ip.plotkrwkrow(ax, color='green')
-    plt.show()
+    for t in np.arange(0, 1, 0.1):
+        ow_ip = utils.interpolate_ow(ow_low, ow_high, t)
+        check_table(ow_ip.table)
+        # ow_ip.plotkrwkrow(ax, color='green')
+    # plt.show()

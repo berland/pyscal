@@ -363,7 +363,7 @@ class WaterOil(object):
             kromax (float): maximal value of kro at sw=swl. Default 1
         """
 
-        # Linear curve between swl and swcr:
+        # Linear curve between swl and swcr (left part):
         self.table.loc[self.table["son"] > 1.0 + epsilon, "krow"] = np.nan
         if self.swcr < self.swl + self.h:
             if kromax:
@@ -382,6 +382,9 @@ class WaterOil(object):
 
         # Avoid machine accuracy problems around swcr (monotonicity):
         self.table.loc[self.table["krow"] > kromax, "krow"] = kromax
+
+        # Set to zero above sorw:
+        self.table.loc[self.table["sw"] > 1 - self.sorw, "krow"] = 0
 
     def add_LET_water(self, l=2, e=2, t=2, krwend=1, krwmax=None):
         """Add krw data through LET parametrization
