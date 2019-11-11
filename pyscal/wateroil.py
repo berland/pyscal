@@ -310,7 +310,7 @@ class WaterOil(object):
 
         self.table["krw"] = krwend * self.table.swn ** nw
 
-        self._handle_endpoints_linearpart_water(krwend, krwmax)
+        self.set_endpoints_linearpart_krw(krwend, krwmax)
 
         if not krwmax:
             krwmax = 1
@@ -320,10 +320,18 @@ class WaterOil(object):
             krwmax,
         )
 
-    def _handle_endpoints_linearpart_water(self, krwend, krwmax=None):
-        """Internal utility function to handle krw
-        around endpoints.
+    def set_endpoints_linearpart_krw(self, krwend, krwmax=None):
+        """Set linear parts of krw outside endpoints.
 
+        Curve will be linear from [1 - sorw, 1] (from krwmax to krwend)
+        and zero in [swl, swcr]
+
+        This function is used by add_corey_water(), and perhaps by other
+        utility functions. It should not be necessary for end-users.
+
+        Args:
+            krwend (float): krw at 1 - sorwr
+            krwmax (float): krw at Sw=1. Default 1.
         """
         # Avoid machine accuracy problems around sorw (monotonicity):
         self.table.loc[self.table["krw"] > krwmax, "krw"] = krwmax
@@ -341,11 +349,19 @@ class WaterOil(object):
         self.table.loc[np.isclose(self.table["sw"], 1 - self.sorw), "krw"] = krwend
         self.table.loc[self.table.sw < self.swcr, "krw"] = 0
 
-    def _handle_endpoints_linearpart_oil(self, kroend, kromax=None):
-        """Internal utility function to handle krow
-        around endpoints.
+    def set_endpoints_linearpart_krow(self, kroend, kromax=None):
+        """Set linear parts of krow outside endpoints
 
-        Ensures we obey the endpoints, and linearity where needed"""
+        Curve will be linear in [swl, swcr] (from kromax to kroend)
+        and zero in [1 - sorw, 1]
+
+        This function is used by add_corey_water(), and perhaps by other
+        utility functions. It should not be necessary for end-users.
+
+        Args:
+            kroend (float): value of kro at swcr
+            kromax (float): maximal value of kro at sw=swl. Default 1
+        """
 
         # Linear curve between swl and swcr:
         self.table.loc[self.table["son"] > 1.0 + epsilon, "krow"] = np.nan
@@ -397,7 +413,7 @@ class WaterOil(object):
             * self.table.swn ** l
             / ((self.table.swn ** l) + e * (1 - self.table.swn) ** t)
         )
-        self._handle_endpoints_linearpart_water(krwend, krwmax)
+        self.set_endpoints_linearpart_krw(krwend, krwmax)
 
         if not krwmax:
             krwmax = 1
@@ -440,7 +456,7 @@ class WaterOil(object):
         )
         self.table.loc[self.table.sw >= (1 - self.sorw), "krow"] = 0
 
-        self._handle_endpoints_linearpart_oil(kroend, kromax)
+        self.set_endpoints_linearpart_krow(kroend, kromax)
 
         if not kromax:
             kromax = 1
@@ -477,7 +493,7 @@ class WaterOil(object):
         self.table["krow"] = kroend * self.table.son ** now
         self.table.loc[self.table.sw >= (1 - self.sorw), "krow"] = 0
 
-        self._handle_endpoints_linearpart_oil(kroend, kromax)
+        self.set_endpoints_linearpart_krow(kroend, kromax)
 
         if not kromax:
             kromax = 1
