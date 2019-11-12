@@ -51,6 +51,16 @@ def test_interpolate_wo():
         ow_ip.plotkrwkrow(ax, color="green")
     plt.show()
 
+    fig, ax = plt.subplots()
+    ow_low.plotkrwkrow(ax, color="red")
+    ow_high.plotkrwkrow(ax, color="blue")
+    # Plot again with log yscale:
+    for t in np.arange(0, 1, 0.1):
+        ow_ip = utils.interpolate_ow(ow_low, ow_high, t)
+        ow_ip.plotkrwkrow(ax, color="green", logyscale=True)
+    plt.show()
+
+
 
 def interpolateplottest():
     """Demonstration of interpolation pointwise between LET curves"""

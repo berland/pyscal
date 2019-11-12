@@ -1004,9 +1004,19 @@ class WaterOil(object):
             plt.show()
 
     def plotkrwkrow(
-        self, ax=None, color="blue", alpha=1, label=None, linewidth=1, linestyle="-"
+        self,
+        ax=None,
+        color="blue",
+        alpha=1,
+        label=None,
+        linewidth=1,
+        linestyle="-",
+        logyscale=False,
     ):
-        """Plot krw and krow on a supplied matplotlib axis"""
+        """Plot krw and krow
+
+        If the argument 'ax' is not supplied, a new plot
+        window will be made. If supplied, it will draw on the specified axis."""
         import matplotlib.pyplot as plt
         import matplotlib
 
@@ -1015,6 +1025,9 @@ class WaterOil(object):
             _, useax = plt.subplots()
         else:
             useax = ax
+        if logyscale:
+            useax.set_yscale("log")
+            useax.set_ylim([1e-8, 1])
         self.table.plot(
             ax=useax,
             x="sw",
