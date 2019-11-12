@@ -228,7 +228,7 @@ def normalize_nonlinpart(curve):
         curve.table["krw"],
         kind="linear",
         bounds_error=False,
-        fill_value=(0.0, 1.0),
+        fill_value=(0.0, curve.table["krw"].max()),
     )
 
     # The internal dataframe might contain normalized
@@ -243,7 +243,7 @@ def normalize_nonlinpart(curve):
         curve.table["krow"],
         kind="linear",
         bounds_error=False,
-        fill_value=(1.0, 0.0),
+        fill_value=(0.0, curve.table["krow"].max()),
     )
     so_fn = lambda son: curve.sorw + son * (1.0 - curve.sorw - curve.swcr)
     kro_fn = lambda son: kro_interp(so_fn(son))
@@ -299,7 +299,7 @@ def interpolate_ow(ow_low, ow_high, parameter, h=0.01):
     krwmax_new = weighted_value(ow_low.table["krw"].max(), ow_high.table["krw"].max())
     kromax_new = weighted_value(ow_low.table["krow"].max(), ow_high.table["krow"].max())
     krwend_new = weighted_value(krw1(1), krw2(1))
-    kroend_new = weighted_value(kro1(0), kro2(0))
+    kroend_new = weighted_value(kro1(1), kro2(1))
 
     # Construct the new WaterOil object, with interpolated
     # endpoints:

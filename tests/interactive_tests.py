@@ -27,6 +27,18 @@ def test_interpolate_wo():
     ow_high.add_corey_water(nw=random.uniform(1, 3), krwend=random.uniform(0.5, 1))
     ow_low.add_corey_oil(now=random.uniform(1, 3), kroend=random.uniform(0.5, 1))
     ow_high.add_corey_oil(now=random.uniform(1, 3), kroend=random.uniform(0.5, 1))
+    print(
+        " ** Low curve (red):\n"
+        + ow_low.swcomment
+        + ow_low.krwcomment
+        + ow_low.krowcomment
+    )
+    print(
+        " ** High curve (red):\n"
+        + ow_high.swcomment
+        + ow_high.krwcomment
+        + ow_high.krowcomment
+    )
 
     from matplotlib import pyplot as plt
 
