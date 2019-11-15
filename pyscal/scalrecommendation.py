@@ -4,7 +4,7 @@ import logging
 
 import numpy as np
 
-from pyscal import WaterOilGas, WaterOil, GasOil, interpolator
+from pyscal import WaterOilGas, WaterOil, GasOil, utils
 
 
 class SCALrecommendation(object):
@@ -250,7 +250,7 @@ class SCALrecommendation(object):
                 h=h,
                 tag=self.tag + " interpolant at %g" % parameter,
             )
-            interpolator(
+            utils.interpolator(
                 interpolant.wateroil,
                 curve1,
                 curve2,
@@ -275,7 +275,7 @@ class SCALrecommendation(object):
                 h=h,
                 tag=self.tag + " interpolant at %g" % parameter,
             )
-            interpolator(
+            utils.interpolator(
                 interpolant.wateroil,
                 curve1,
                 curve2,
@@ -312,7 +312,7 @@ class SCALrecommendation(object):
                 h=h,
                 tag=self.tag + " interpolant at %g" % gasparameter,
             )
-            interpolator(
+            utils.interpolator(
                 interpolant.gasoil,
                 curve1,
                 curve2,
@@ -336,7 +336,7 @@ class SCALrecommendation(object):
                 h=h,
                 tag=self.tag + " interpolant at %g" % gasparameter,
             )
-            interpolator(
+            utils.interpolator(
                 interpolant.gasoil,
                 curve1,
                 curve2,

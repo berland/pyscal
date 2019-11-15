@@ -13,7 +13,6 @@ from pyscal.constants import SWINTEGERS
 from pyscal.constants import MAX_EXPONENT
 from pyscal import utils
 
-
 class WaterOil(object):
     """A representation of two-phase properties for oil-water.
 
