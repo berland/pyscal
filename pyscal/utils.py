@@ -242,7 +242,30 @@ def normalize_pc(curve):
     return pc_fn
 
 
-def interpolate_wo(wo_low, wo_high, parameter, h=0.01):
+def _interpolate_tags(low, high, parameter, tag):
+    """Preserve tag/comment. Depending on context, the
+    interpolation parameter may or may not make sense. In a SCALrecommendation
+    interpolation, the new tag should be constructed in the caller of this function.
+    because of the way the parameter value is handled.
+
+    This function is used by interpolate_wo and interpolate_go
+    """
+    if tag is None:
+        if low.tag == high.tag:
+            if low.tag:
+                return "Interpolated to {} in {}".format(parameter, low.tag)
+            else:  # No tags defined.
+                return "Interpolated to {}".format(parameter)
+        else:
+            return "Interpolated to {} between {} and {}".format(
+                parameter, low.tag, high.tag,
+            )
+    else:
+        new_tag = tag
+    return new_tag
+
+
+def interpolate_wo(wo_low, wo_high, parameter, h=0.01, tag=None):
     """Interpolates between two water-oil curves.
 
     The saturation endpoints for the curves must be known
@@ -260,6 +283,8 @@ def interpolate_wo(wo_low, wo_high, parameter, h=0.01):
             the high case. Any number in between will return an interpolated curve
         h (float): Saturation step-size in interpolant. If defaulted, a value
             smaller than in the input curves are used, to preserve information.
+        tag (string): Tag to associate to the constructed object. If None
+            it will be automatically filled. Set to empty string to ensure no tag.
     Returns:
         A new oil-water curve
 
@@ -321,10 +346,13 @@ def interpolate_wo(wo_low, wo_high, parameter, h=0.01):
     wo_new.table["pc"] = weighted_value(
         pc1(wo_new.table["swn_pc_intp"]), pc2(wo_new.table["swn_pc_intp"])
     )
+
+    wo_new.tag = _interpolate_tags(wo_low, wo_high, parameter, tag)
+
     return wo_new
 
 
-def interpolate_go(go_low, go_high, parameter, h=0.01):
+def interpolate_go(go_low, go_high, parameter, h=0.01, tag=None):
     """Interpolates between two gas-oil curves.
 
     The saturation endpoints for the curves must be known
@@ -342,6 +370,8 @@ def interpolate_go(go_low, go_high, parameter, h=0.01):
             the high case. Any number in between will return an interpolated curve
         h (float): Saturation step-size in interpolant. If defaulted, a value
             smaller than in the input curves are used, to preserve information.
+        tag (string): Tag to associate to the constructed object. If None
+            it will be automatically filled. Set to empty string to ensure no tag.
     Returns:
         A new gas-oil curve
 
@@ -407,6 +437,8 @@ def interpolate_go(go_low, go_high, parameter, h=0.01):
 
     # Here we should have honored krgendanchor. Check github issue.
     go_new.set_endpoints_linearpart_krg(krgend=krgend_new, krgmax=krgmax_new)
+
+    go_new.tag = _interpolate_tags(go_low, go_high, parameter, tag)
 
     return go_new
 
