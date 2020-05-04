@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>History &mdash; pyscal git documentation</title>
+  <title>History &mdash; pyscal 0.1.dev275+gea40058 documentation</title>
   
 
   
@@ -17,33 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="pyscal package" href="pyscal.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -60,7 +63,7 @@
             
             
               <div class="version">
-                git
+                0.1.dev275+gea40058
               </div>
             
           
@@ -85,7 +88,7 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Introduction to pyscal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to pyscal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">API for pyscal</a></li>
@@ -156,20 +159,22 @@
             
   <div class="section" id="history">
 <h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
-<p>This package was developed internally at Equinor starting 2017
+<p>This package was developed internally at Equinor starting in 2017
 based on several internal codes in Python and other
 languages. Open sourced (LGPLv3) in 2019.</p>
-<dl class="docutils">
-<dt>Release history:</dt>
-<dd><ul class="first last simple">
-<li>v1.0.0 - scheduled autumn 2019</li>
-</ul>
-</dd>
-</dl>
-<p>Commit history:</p>
+<p>Release history</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://github.com/equinor/pyscal/commits/">https://github.com/equinor/pyscal/commits/</a></li>
+<li><p>v0.4.0 - Feb 2020 - Added command line tool</p></li>
+<li><p>v0.3.0 - Dec 2019 - Rewritten interpolation code</p></li>
+<li><p>v0.2.0 - Nov 2019 - Includes PyscalFactory for creating objects.</p></li>
+<li><p>v0.1.0 - June 2019 - first open source version</p></li>
+</ul>
+</div></blockquote>
+<p>Detailed release history at</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://github.com/equinor/pyscal/releases">https://github.com/equinor/pyscal/releases</a></p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -183,7 +188,7 @@ languages. Open sourced (LGPLv3) in 2019.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="pyscal.html" class="btn btn-neutral" title="pyscal package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pyscal.html" class="btn btn-neutral float-left" title="pyscal package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -192,7 +197,7 @@ languages. Open sourced (LGPLv3) in 2019.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright Equinor
+        &copy; Copyright Equinor 2019-2020
 
     </p>
   </div>
@@ -209,26 +214,16 @@ languages. Open sourced (LGPLv3) in 2019.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>  
+  </script>
+
+  
+  
+    
+    
 
   <style>
     /* Sidebar header (and topbar for mobile) */
@@ -238,6 +233,9 @@ languages. Open sourced (LGPLv3) in 2019.</p>
     /* Sidebar */
     .wy-nav-side {
       background: #474747;
+    }
+    .wy-side-nav-search > div.version {
+      color: white;
     }
   </style>
 

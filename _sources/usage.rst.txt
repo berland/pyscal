@@ -1,12 +1,64 @@
 Usage
 =====
 
-Pyscal is meant to be used directly by end users by its Python
-API. Additionally there are end-user scripts where parameter
-collection are inputted through Excel worksheets.
+``pyscal`` is a both a command line tool and a Python API. The command
+line tool is a short wrapper utilizing the underlying pyscal functionality.
 
-A water-oil curve
------------------
+The command line tool
+---------------------
+
+.. argparse::
+    :ref: pyscal.pyscalcli.get_parser
+    :prog: pyscal
+
+An example input table could look like:
+
+========  ==========  ======  =====  ========  ====  ====  ====  =====  =====  =====  ====  ====  ====  =====  =====  =====  ======  ======  ========  =========  =========  =======  =====  ======  ==========  ==========  ======
+  SATNUM  comment      sorw    swl    krwend    Lw    Ew    Tw    Low    Eow    Tow    Lg    Eg    Tg    Log    Eog    Tog    sorg    sgcr    krgend    krogend    krowend    swirr      a       b    poro_ref    perm_ref    drho
+========  ==========  ======  =====  ========  ====  ====  ====  =====  =====  =====  ====  ====  ====  =====  =====  =====  ======  ======  ========  =========  =========  =======  =====  ======  ==========  ==========  ======
+       1  Sognefj      0.19    0.12      0.39  2.53  2.37  0.99   2.5    1.92   1.14  1.71  1.27  1.03   2.92   3.22   1.28    0.07    0.01      0.87          1          1     0.01  0.321  -1.283        0.25        1000     300
+       2  Myolites     0.19    0.16      0.3   2.63  1.94  0.97   2.38   2.2    1.22  1.78  1.13  1.01   2.71   3.62   1.42    0.06    0.01      0.9           1          1     0.01  0.321  -1.283        0.18         300     300
+       3  Foobarites   0.28    0.23      0.18  2.81  1.24  0.93   2.12   3.02   1.4   1.91  0.91  0.96   2.4    4.79   1.8     0.04    0.01      0.93          1          1     0.01  0.321  -1.283        0.1            1     300
+========  ==========  ======  =====  ========  ====  ====  ====  =====  =====  =====  ====  ====  ====  =====  =====  =====  ======  ======  ========  =========  =========  =======  =====  ======  ==========  ==========  ======
+
+For SCAL recommendation where the intention is to interpolate between a pessimistic,
+through a base case and to a optimistic curve set, this is accomplished
+by having three rows for each SATNUM, and a column called CASE which contains
+the strings 'pessimistic', 'base' and 'optimistic' (also possible is
+'low', 'high', 'opt' and 'pess'. 'low' is identical to 'pessimistic' always and
+vice versa. An example table could be
+
+======= ===== ====== ======
+ SATNUM CASE     nw   etc..
+======= ===== ====== ======
+      1 low      2.1    ...
+      1 base     1.8    ...
+      1 high     1.5    ...
+      2 pess     2.4    ...
+      2 base     1.9    ...
+      2 opt      1.2    ...
+======= ===== ====== ======
+
+The values in the CASE column are also case-insensitive. Remember to always
+supply interpolation parameters to the command line client whenever the
+data set contains a CASE column.
+
+Saturation and relative permeability endpoints
+----------------------------------------------
+
+The endpoints used in the parametrization is shown in the following figure for WaterOil.
+
+.. image:: images/wateroil-endpoints.png
+    :width: 600
+
+For GasOil, there is an option of where to anchor ``krgend``, shown in the following figure.
+The red curve is the default, where ``krgendanchor=="sorg"``, and the pink is the other choice.
+
+.. image:: images/gasoil-endpoints.png
+    :width: 600
+
+Python API
+----------
 
 To generate SWOF input for Eclipse or flow (OPM) with certain
 saturation endpoints and certain relative permeability endpoints, you
@@ -23,12 +75,12 @@ may run the following code:
 
 which will print a table that can be included in an Eclipse
 simulation. There are more parameters to adjust, check the
-corresponding API. Instead of corey, you can find a corresponding
+corresponding API. Instead of Corey, you can find a corresponding
 function for a LET-parametrization, or perhaps another capillary
 pressure function. Also adjust the parameter ``h`` to obtain a finer
 resolution on the saturation scale.
 
-The output from the code above:
+The output from the code above is:
 
 .. code-block:: console
 
@@ -60,6 +112,34 @@ Instead of ``SWOF()``, you may ask for ``SWFN()`` or similar. Both
 family 1 and 2 of Eclipse keywords are supported.  For the Nexus
 simulator, you can use the function ``WOTABLE()``
 
+Alternatively, it is possible to send all parameters for a SWOF curve
+as a dictionary, through use of the ``PyscalFactory`` class. The
+equivalent to the code lines above (except for capillary pressure) is then:
+
+.. code-block:: python
+
+    from pyscal import PyscalFactory
+    params = dict(swl=0.05, sorw=0.03, h=0.1, nw=2.1, krwend=0.6, now=2.5, krowend=0.9, h=0.05)
+    wo = PyscalFactory.create_water_oil(params)
+    print(wo.SWOF())
+
+Note that parameter names to factory functions are case *insensitive*, while
+the ``add_*()`` parameters are not. This is becase the ``add_*()`` parameters
+are meant as a Python API, while the factory class is there to aid
+users when input is written in a different context, like an Excel
+spreadsheet.
+
+Also bear in mind that some API parameter names are ambiguous in the context of
+the factory. ``kroend`` makes sense for ``WaterOil.add_corey_oil()`` but
+is ambiguous in the factory where both water-oil and gas-oil are accounted for.
+In the factory the names ``krowend`` and ``krogend`` must be used.
+
+Similarly for the LET parameters, where `l` is valid for the low-level functions, while
+in the factory context you must state `Lo`, `Lw`, `Lg` or `Log` (case-insensitive).
+
+For visual inspection, there is a function ``.plotkrwkrow()`` which will
+make a simple plot of the relative permeability curves using matplotlib.
+
 Gas-oil curve
 -------------
 
@@ -75,8 +155,14 @@ For a corresponding gas-oil curve, the API is analogous,
 
 If you want to use your SGOF data together with a SWOF, it makes sense
 to share some of the saturation endpoints, as there are compatibility constraints.
-For this reason, it is recommended to initialize both the WaterOil and GasOil objects
-trough a WaterOilGas object.
+For this reason, it is recommended to initialize both the ``WaterOil`` and ``GasOil``
+objects trough a ``WaterOilGas`` object.
+
+There is a corresponding ``PyscalFactory.create_gas_oil()`` support function with
+dictionary as argument.
+
+For plotting, ``GasOil`` object has a function ``.plotkrgkrog()``.
+
 
 Water-oil-gas
 -------------
@@ -100,42 +186,40 @@ Typical usage could be:
 As seen in the example, the object members ``wateroil`` and ``gasoil`` are ``WaterOil`` and ``GasOil`` objects
 having been initialized by the ``WaterOilGas`` initialization.
 
+Alternatively, there is a
 The ``WaterOilGas`` objects can write ``SWOF`` tables (which is directly delegated to the ``WaterOil`` object, but
 it can also write a ``SOF3`` table.
 
 A method ``.selfcheck()`` can be run on the object to determine if there are any known consistency issues (which would
 crash a reservoir simulator) with the tabulated data.
 
+
 Interpolation in a SCAL recommendation
 --------------------------------------
 
 A SCAL recommendation in this context is nothing but a container
-of three `WaterOilGas` objects, representing a `low`, a `base` and a
+of three ``WaterOilGas`` objects, representing a `low`, a `base` and a
 `high` case. The prime use case for this container is the ability
 to interpolate between the low and high case.
 
 An interpolation parameter at `-1` returns the low case, `0` returns the
 base case and `1` returns the high case. Optionally, a separate
-interpolation parameter can be used for the `GasOil` interpolation
+interpolation parameter can be used for the ``GasOil`` interpolation
 if they are believed to be independent.
 
-SCAL recommendations are initialized with dictionaries
-for each of the low, base and high curve sets. LET or Corey
-parameterizations are assumed and the parameters are picked
-from the dictionaries. The dictionaries are typically parsed
-from a row in a Excel worksheet (via Pandas).
+SCAL recommendations are initialized from three distinct
+``WaterOilGas`` objects, which are then recommended constructed using
+the corresponding factory method.
 
 .. code-block:: python
 
-    from pyscal import SCALrecommendation
+    from pyscal import SCALrecommendation, PyscalFactory
 
-    low = dict(...)
-    base = dict(...)
-    high = dict(...)
-    rec = SCALrecommendation(low, base, high, h=0.02)
+    low = PyscalFactory.create_water_oil_gas(dict(nw=1, now=1, ng=1, nog=1, tag='low'))
+    base = PyscalFactory.create_water_oil_gas(dict(nw=2, now=2, ng=2, nog=3, tag='base'))
+    high = PyscalFactory.create_water_oil_gas(dict(nw=3, now=3, ng=3, nog=3, tag='high'))
+    rec = SCALrecommendation(low, base, high)
 
     interpolant = rec.interpolate(-0.4)
 
     print(interpolant.SWOF())
-
-
