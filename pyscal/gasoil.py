@@ -1,4 +1,4 @@
-""" Representing a GasOil object """
+"""Representing a GasOil object """
 
 import logging
 
@@ -196,11 +196,6 @@ class GasOil(object):
                 "-- swirr=%g, sgcr=%g, swl=%g, sorg=%g, krgendanchor=%s\n"
                 % (self.swirr, self.sgcr, self.swl, self.sorg, self.krgendanchor)
             )
-
-    def add_gasoil_fromtable(self, *args, **kwargs):
-        """Deprecated. Use ``add_fromtable()``"""
-        logger.warning("add_gasoil_fromtable() is deprecated, use add_fromtable()")
-        self.add_fromtable(*args, **kwargs)
 
     def add_fromtable(
         self,
