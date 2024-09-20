@@ -2,10 +2,14 @@
 
 These functions also need to be correct in order to trust tests."""
 
+import math
 import pandas as pd
 import pytest
-
+from pyscal.utils.string import df2str
+from hypothesis import strategies as st
+from hypothesis import given, settings
 from pyscal.utils.testing import float_df_checker, sat_table_str_ok
+from pyscal.constants import SWINTEGERS
 
 
 @pytest.mark.parametrize(
@@ -142,3 +146,20 @@ def test_float_df_checker(data, value, expected):
         "values",
         expected,
     )
+
+
+@settings(max_examples=10000)
+@given(st.floats(min_value=0, max_value=1))
+def test_rationale_for_two_step_rounding(rogue_value):
+    # rogue_value = 0.8437499719590555
+
+    proper_rounded = round(rogue_value * SWINTEGERS)
+    # proper_rounded = math.ceil(rogue_value * SWINTEGERS * 10)
+    # proper_rounded = int(float(f"{rogue_value:4f}") * SWINTEGERS)
+    proper_rounded = round(round(rogue_value * SWINTEGERS * 10) / 10)
+    printed_value = float(df2str(pd.DataFrame([rogue_value])))
+    # NB: printed value have more significant digits than the rounded
+    rounded_printed = round(printed_value * SWINTEGERS)
+    print(f"{proper_rounded=} {printed_value=} {rounded_printed=}")
+    assert round(printed_value * SWINTEGERS) == proper_rounded
+    # assert round(printed_value * SWINTEGERS) != buggy_rounded
