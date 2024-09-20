@@ -154,12 +154,12 @@ class GasOil:
         sg_list.sort()
         self.table = pd.DataFrame(sg_list, columns=["SG"])
         self.table["SL"] = 1 - self.table["SG"]
-        self.table["sgint"] = list(map(round, self.table["SG"] * SWINTEGERS))
-        self.table["slint"] = list(map(round, self.table["SL"] * SWINTEGERS))
+        self.table["sgint"] = list(map(round, self.table["SG"] * SWINTEGERS * 10))
+        # self.table["slint"] = list(map(round, self.table["SL"] * SWINTEGERS))
         print(len(self.table))
         self.table = self.table.drop_duplicates("sgint")
         print(len(self.table))
-        self.table = self.table.drop_duplicates("slint")
+        # self.table = self.table.drop_duplicates("slint")
         print(len(self.table))
 
         # Now sg=1-sorg-swl might be accidentally dropped, so make sure we
@@ -180,6 +180,7 @@ class GasOil:
             self.table = pd.concat([zero_row, self.table], sort=False).reset_index(
                 drop=True
             )
+        print(len(self.table))
 
         self.table = self.table.reset_index()
         self.table = self.table[["SG", "SL"]]
