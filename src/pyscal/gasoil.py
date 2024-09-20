@@ -153,9 +153,14 @@ class GasOil:
         )
         sg_list.sort()
         self.table = pd.DataFrame(sg_list, columns=["SG"])
-        self.table["sgint"] = list(map(round, self.table["SG"] * SWINTEGERS * 10))
-        self.table["sgint"] = list(map(round, self.table["sgint"] / 10))
+        self.table["SL"] = 1 - self.table["SG"]
+        self.table["sgint"] = list(map(round, self.table["SG"] * SWINTEGERS))
+        self.table["slint"] = list(map(round, self.table["SL"] * SWINTEGERS))
+        print(len(self.table))
         self.table = self.table.drop_duplicates("sgint")
+        print(len(self.table))
+        self.table = self.table.drop_duplicates("slint")
+        print(len(self.table))
 
         # Now sg=1-sorg-swl might be accidentally dropped, so make sure we
         # have it by replacing the closest value by 1 - sorg exactly
@@ -177,8 +182,7 @@ class GasOil:
             )
 
         self.table = self.table.reset_index()
-        self.table = self.table[["SG"]]
-        self.table["SL"] = 1 - self.table["SG"]
+        self.table = self.table[["SG", "SL"]]
         if krgendanchor == "sorg":
             # Normalized sg (sgn) is 0 at sgcr, and 1 at 1-swl-sorg
             assert 1 - swl - sgcr - sorg > epsilon

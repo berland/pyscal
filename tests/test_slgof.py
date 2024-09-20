@@ -3,7 +3,7 @@
 import hypothesis.strategies as st
 import numpy as np
 import pytest
-from hypothesis import given
+from hypothesis import given, reproduce_failure
 
 from pyscal import GasOil, WaterOilGas
 from pyscal.constants import EPSILON, SWINTEGERS
@@ -127,6 +127,7 @@ def test_numerical_problems(swl, sorg, sgcr):
     st.floats(min_value=0.0, max_value=0.3),
     st.floats(min_value=1.0 / float(1000 * SWINTEGERS), max_value=0.5),
 )
+@reproduce_failure("6.104.1", b"AXicY2BABgcUwBQTiKnvdC8/O3APkHmwUD/46pR/WwFrKwmp")
 def test_slgof_hypo(swl, sorg, sgcr, h):
     """Shotgun-testing of slgof"""
     gasoil = GasOil(swl=swl, sorg=sorg, sgcr=sgcr, h=h)
